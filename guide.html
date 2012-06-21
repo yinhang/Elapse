@@ -1,0 +1,510 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+	<head>
+		<title>Elapse向导</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<script type="text/javascript" src="javascript/Elapse.js"></script>
+		<script type="text/javascript" src="javascript/jquery-1.6.js"></script>
+		<script type="text/javascript">
+
+		</script>
+		<style type="text/css">
+			textarea.code {
+				width: 90%;
+				border: 8px solid #cccccc;
+				font-size: 12px;
+				background-color: #EDECEB;
+				font-family: consolas,monospace;
+				overflow: auto;
+			}
+			h1.l1-title {
+				font-size: 17px;
+			}
+			div.content {
+				padding-left: 16px;
+			}
+			h1.l2-title {
+				font-size: 15px;
+				background-color: #e6e6e6;
+			}
+			h1.l3-title {
+				font-size: 14px;
+			}
+			#ctrlbox button {
+				font-size: 24px;
+				border: 2px solid #f0f0f0;
+				font-style: italic;
+				cursor: pointer;
+			}
+			#ctrlbox {
+				position: fixed;
+				bottom: 0px;
+				right: 0px;
+			}
+			#ctrlbox button:hover {
+				color: #ECE9D8;
+				background-color: #000000;
+				font-style: normal;
+			}
+			textarea.editor {
+				background-color: #EDECe0;
+			}
+			div.start {
+				background-color: #ffffff;
+			}
+			div.describe {
+				font-size: 13px;
+				margin-bottom: 4px;
+			}
+			div.l3-describe {
+				text-indent: 8px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1 class="l1-title" id="first_title">简单的开始，第一个程序。</h1>
+		<div class="l1-content content start">
+			<h1 class="l2-title">示例模板</h1>
+			<textarea class="code editor" style="height: 435px;" id="template">
+				<table>
+					<thead>
+						<tr>
+							<th>
+								姓名
+							</th>
+							<th>
+								性别
+							</th>
+							<th>
+								生日
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						${forarr #userList as user}
+							<tr>
+								<td>
+								</td>
+								<td>
+									${user.sex}
+								</td>
+								<td>
+									${user.birthday}
+								</td>
+							</tr>
+						${/forarr}
+					</tbody>
+				</table>
+			</textarea>
+			<h1 class="l2-title">示例JSON数据</h1>
+			<textarea class="code editor" style="height: 210px;" id="json">
+				{
+					"userList": [
+						{
+							"name": "小明",
+							"sex": "男",
+							"birthday": "1989-10-29"
+						},
+						{
+							"name": "小红",
+							"sex": "女",
+							"birthday": "1989-10-1"
+						}
+					]
+				}
+			</textarea>
+			<h1 class="l2-title">示例渲染脚本代码</h1>
+			<textarea class="code editor" style="height: 175px;" id="render_script">
+				var template = $("#template").val();
+				var json = $.parseJSON($("#json").val());
+				//渲染代码开始
+				Elapse.renderFromSource({
+					source: template,
+					data: json,
+					complete: function (text) {
+						$("#result").html(text);
+					}
+				});
+				//渲染代码结束
+			</textarea>
+			<br/>
+			<br/>
+			<h1 class="l2-title" id="render_result">渲染结果</h1>
+			<textarea class="code" style="height: 600px;-moz-user-select: none;" id="result" readonly="readonly" onselectstart="return false;">
+				
+			</textarea>
+			<script type="text/javascript">
+				eval($("#render_script").html());
+			</script>
+		</div>
+		<h1 class="l1-title" id="first_title">基本用法</h1>
+
+			<h1 class="l2-title">变量</h1>
+			<div class="l2-content content">
+				<div class="describe">
+					变量分为两种类型：动态变量、临时变量和全局变量。
+				</div>
+				<h1 class="l3-title">访问动态变量</h1>
+				<div class="describe l3-describe">
+					动态变量为用户自定义变量和注入到模板的变量。均为“#”这个特殊变量的子对象。“#”有两种形态，第一种形态为父对象模式，第二种形态为子对象模式。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 64px;">
+					父对象模式: #.varname 或者 #["varname"]
+					子对象模式: #varname
+					两种模式没有本质上的区别,“子对象模式”使用起来比较方便而已。
+				</textarea>
+				<h1 class="l3-title">访问作用域临时变量</h1>
+				<div class="describe l3-describe">
+					临时变量为语法环境下临时定义的变量。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 96px;">
+					${forarr #userList as user}
+						${user.name}
+					${/forarr}
+					
+					“user”即为作用域临时变量,“forarr”是用于循环数组的关键字，在循环中，可直接用“user”访问当前数组元素。
+				</textarea>
+				<h1 class="l3-title">全局JavaScript对象访问</h1>
+				<div class="describe l3-describe">
+					可访问window下的所有数据
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 70px;">
+					${@location.href}
+					
+					“@”前缀即为window属性访问
+				</textarea>
+			</div>
+			<h1 class="l2-title">循环语句</h1>
+			<div class="l2-content content">
+				<div class="describe">
+					支持四种循环:forarr,foreach,loop,while。
+				</div>
+				<h1 class="l3-title">forarr</h1>
+				<div class="describe l3-describe">
+					forarr专门用来遍历数组，内部实现使用经典的遍历数组方式，速度快。
+				</div>
+				<textarea class="code" readonly="readonly" readonly="readonly" style="height: 128px;">
+					${forarr #userList as user}
+						列表长度为:${#userList#length},现在循环到了${user#index},值:${user}
+					${/forarr}
+					
+					在forarr循环中可以访问到三种作用域临时变量:
+						数组长度 ：${user#length}
+						当前下标: ${user#index}
+						当前数组元素: ${user}
+				</textarea>
+				<h1 class="l3-title">foreach</h1>
+				<div class="describe l3-describe">
+					foreach为迭代集合专用
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 260px;">
+					示例数据：
+					{
+						"color": {
+							"red": "#ff0000",
+							"green": "#00ff00",
+							"blue": "#0000ff",
+						}
+					}
+					
+					迭代代码：
+					${foreach #colors as color}
+						颜色${color#key}的十六进制值为:${color}
+					${/foreach}
+					
+					在foreach循环中可以访问到两种作用域临时变量:
+						当前迭代key: ${color#key}
+						当前迭代值（如果有的话）: ${color}
+				</textarea>
+				<h1 class="l3-title">loop</h1>
+				<div class="describe l3-describe">
+					loop为循环器，只进行单纯的循环，无任何迭代与遍历功能。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 280px;">
+					循环十次:
+					${loop 10 as ls}
+						循环步进为${ls#step},循环到了${ls},循环到${ls#over}即结束。
+					${/loop}
+					
+					循环十次，每次递增2:
+					${loop 10,2 as ls}
+						循环步进为${ls#step},循环到了${ls},循环到${ls#over}即结束。
+					${/loop}
+					
+					循环十次，每次递增2,初始值为5:
+					${loop 10,2,5 as ls}
+						循环步进为${ls#step},循环到了${ls},循环到${ls#over}即结束。
+					${/loop}
+					
+					在loop循环中可以访问到三种作用域临时变量:
+						循环步进： ${ls#step}
+						本次循环值：${ls#state}
+						结束循环值：${ls}
+				</textarea>
+				<h1 class="l3-title">while</h1>
+				<div class="describe l3-describe">
+					条件循环，当条件为true时，循环继续。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 72px;">
+					${while true}
+						一次循环立马退出
+						${break}
+					${/while}
+				</textarea>
+			</div>
+			<h1 class="l2-title">分支语句</h1>
+			<div class="l2-content content">
+				<div class="describe">
+					支持if,else,elseif,switch。
+				</div>
+				<h1 class="l3-title">if</h1>
+				<div class="describe l3-describe">
+					经典的if语句，简便的用法。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 70px;">
+					${if #userList.length == 3}
+						用户列表长度为3
+					${/if}
+				</textarea>
+				<h1 class="l3-title">else</h1>
+				<div class="describe l3-describe">
+					经典的else语句，简便的用法。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 96px;">
+					${if #userList.length == 3}
+						用户列表长度为3
+					${else}
+						用户列表长度不为3
+					${/if}
+				</textarea>
+				<h1 class="l3-title">elseif</h1>
+				<div class="describe l3-describe">
+					进行“否则的话，那么如果这样。。。”的判断
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 120px;">
+					${if #userList.length == 3}
+						用户列表长度为3
+					${elseif #userList.length == 0}
+						用户列表长度为0
+					${else}
+						用户列表长度不为3
+					${/if}
+				</textarea>
+				<h1 class="l3-title">switch</h1>
+				<div class="describe l3-describe">
+					switch在某些情况下比if系列语句更快。并且进行大量平级条件判断的时候，比用if写出的代码更优雅。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 240px;">
+					${switch #userList.length}
+						${case 0}
+							用户列表长度为空。
+							${break}
+						${case 1}
+							用户列表长度为1。
+							${break}
+						${case 2}
+							用户列表长度为2。
+							${break}
+						${case 3}
+							用户列表长度为3。
+							${break}
+						${default}
+							神马啊。。。
+					${/switch}
+				</textarea>
+			</div>
+			<h1 class="l2-title">执行程序与设置</h1>
+			<div class="l2-content content">
+				<h1 class="l3-title">eval</h1>
+				<div class="describe l3-describe">
+					执行一段代码，注意这里的eval和我们熟知的JavaScript中的eval没有任何关系。这里的作用为执行一段程序代码，但是不会渲染。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 90px;">
+					将一个变量赋null:
+					${eval #userList[0] = null}
+					
+					定义一个变量:
+					${eval #myvar = "hello world!"}
+				</textarea>
+				<h1 class="l3-title">set</h1>
+				<div class="describe l3-describe">
+					对模板进行一些配置
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 90px;">
+					配置模板不进行防html注入处理,此时渲染的结果将不会为Unicode编码（默认为Unicode编码输出，防止html注入):
+					${set filter_data: false}
+					
+					可配置的选项:
+					${boolean} filter_data: 是否进行防止html注入处理？为true的时候，当注入的数据为html代码的时候，会被转换成Unicode码。
+				</textarea>
+				<h1 class="l3-title">name</h1>
+				<div class="describe l3-describe">
+					每个设置了name的模板都会在系统中注册，以便其他模板引入。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 48px;">
+					设置模板的name为“userlist”
+					${name userlist}
+				</textarea>
+			</div>
+			<h1 class="l2-title">包含模板</h1>
+			<div class="l2-content content">
+				<h1 class="l3-title">include</h1>
+				<div class="describe l3-describe">
+					通过指定一个名称来包含一个模板。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 90px;">
+					包含名称为“userlist”的模板：
+					${include userlist}
+					
+					包含名称为“userlist”的模板,并且向其注入一些数据：
+					${include userlist:#userList}
+				</textarea>
+			</div>
+		</div>
+		<h1 class="l1-title" id="first_title">引擎与高级功能</h1>
+		<div class="l1-content content">
+			<h1 class="l2-title">理念</h1>
+			<div class="l2-content content">
+				<div class="describe">
+					<ul>
+						<li>模板基本执行机制为回调式，这样做的好处是可兼容各种加载机制，例如：异步载入。</li>
+						<li>默认缓存编译后的设置了name的模板，这其实是一个注册机制，亦可卸载注册过的模板。</li>
+					</ul>
+				</div>
+			</div>
+			<h1 class="l2-title">主引擎</h1>
+			<div class="l2-content content">
+				<div class="describe l3-describe">
+					使用者只需接触主引擎，加载模板引擎后，访问Elapse使用主引擎。
+				</div>
+			</div>
+			<h1 class="l2-title">编译一个模板</h1>
+			<div class="l2-content content">
+				<div class="describe l3-describe">
+					把模板编译为Template对象。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 130px;">
+					var templateSource = "hello ${#userName}!";
+					var template = null;
+					Elapse.compile({
+						source: templateSource,	//模板源代码
+						complete: function (_template) {	//编译成功后的回调函数
+							template = _template;
+						}
+					});
+				</textarea>
+			</div>
+			<h1 class="l2-title">渲染</h1>
+			<div class="l2-content content">
+				<div class="describe l3-describe">
+					渲染一个Template对象。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 130px;">
+					var data = {
+						userName: "小明"
+					};
+					var result = Elapse.render({
+						data: data,	//注入到模板的数据
+						template: template	//模板对象
+					});
+				</textarea>
+			</div>
+			<h1 class="l2-title">设置模板加载器</h1>
+			<div class="l2-content content">
+				<div class="describe l3-describe">
+					一般用于模板include场景，只有设置了name的模板才可能被include，这是因为这个模板在编译的时候被注册到了模板引擎。如果欲include的模板没有被注册到系统，系统就会调用一个加载器尝试加载相应模板。这个加载器需要使用者自行实现。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 270px;">
+					Elapse.setLoader({
+						loader: function (name, setter) {	//设置loader函数，当系统需要的模板未注册的话，会调用此方法。
+							//name: 需要的模板的名称
+							//setter: 接收模板方法。
+							$.ajax({
+								url: "/getTemplate",
+								data: "name=" + name,
+								type: "get",
+								dataType: "text",
+								success: function (source) {
+									setter(source);
+								}
+							});
+						}
+					});
+					
+					你只需要满足loader的调用即可，只有当以上代码的“setter”参数接收了模板源文件，系统才认为得到了此模板。你对模板加载大可放心，一切都由引擎调度好了。
+				</textarea>
+			</div>
+			<h1 class="l2-title">获取注册的模板</h1>
+			<div class="l2-content content">
+				<div class="describe l3-describe">
+					从系统获取注册的模板，如果没有找到相应模板，会调用loader尝试加载此模板。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 100px;">
+					Elapse.getTemplate({
+						name: "userlist",	//要获取的模板名称
+						complete: function (template) {	//获取完成回调
+							
+						}
+					});
+				</textarea>
+			</div>
+			<h1 class="l2-title">移除注册的模板</h1>
+			<div class="l2-content content">
+				<div class="describe l3-describe">
+					从系统移除注册的模板
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 72px;">
+					Elapse.removeTemplate({
+						name: "userlist",	//要移除的模板名称
+					});
+				</textarea>
+			</div>
+			<h1 class="l2-title">从一个模板源直接渲染</h1>
+			<div class="l2-content content">
+				<div class="describe l3-describe">
+					如果要多次渲染一个模板，不建议使用这个方法。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 185px;">
+					var templateSource = "hello ${#userName}";
+					var data = {
+						userName: "小明"
+					};
+					
+					Elapse.renderFromSource({
+						source: templateSource,	//模板源
+						data: data,	//注入到模板的数据
+						complete: function (result) {	//渲染完毕的回调，通过参数传递渲染结果。
+							alert(result);
+						}
+					});
+				</textarea>
+			</div>
+			<h1 class="l2-title">关于Template对象</h1>
+			<div class="l2-content content">
+				<div class="describe l3-describe">
+					Template对象无法直接创建，只能由主引擎生成并统一管理。
+				</div>
+				<textarea class="code" readonly="readonly" style="height: 220px;">
+					Template对象只有一个方法 - render:
+					
+					var data = {
+						userName: "小明"
+					};
+					
+					Elapse.getTemplate({
+						name: "userlist",	//要获取的模板名称
+						complete: function (template) {	//获取完成回调
+							var result = template.render({
+								data: data
+							});
+						}
+					});
+				</textarea>
+			</div>
+		</div>
+		<div id="ctrlbox">
+			<button onclick="eval($('#render_script').html());location.hash='';location.hash='render_result';">渲染!</button>
+			<button onclick="location.hash='';location.hash='first_title';">回顶部</button>
+		</div>
+	</body>
+</html>
