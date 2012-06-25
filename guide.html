@@ -416,7 +416,8 @@
 				</div>
 				<textarea class="code" readonly="readonly" style="height: 270px;">
 					Elapse.setLoader({
-						loader: function (name, setter) {	//设置loader函数，当系统需要的模板未注册的话，会调用此方法。
+						loader: function (name, setter) {	
+							//设置loader函数，当系统需要的模板未注册的话，会调用此方法。
 							//name: 需要的模板的名称
 							//setter: 接收模板方法。
 							$.ajax({
