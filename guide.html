@@ -84,6 +84,7 @@
 						${forarr #userList as user}
 							<tr>
 								<td>
+									${user.name}
 								</td>
 								<td>
 									${user.sex}
@@ -185,11 +186,10 @@
 				</div>
 				<textarea class="code" readonly="readonly" readonly="readonly" style="height: 128px;">
 					${forarr #userList as user}
-						列表长度为:${#userList#length},现在循环到了${user#index},值:${user}
+						列表长度为:${#userList.length},现在循环到了${user#index},值:${user}
 					${/forarr}
 					
-					在forarr循环中可以访问到三种作用域临时变量:
-						数组长度 ：${user#length}
+					在forarr循环中可以访问到两种作用域临时变量:
 						当前下标: ${user#index}
 						当前数组元素: ${user}
 				</textarea>
@@ -200,7 +200,7 @@
 				<textarea class="code" readonly="readonly" style="height: 260px;">
 					示例数据：
 					{
-						"color": {
+						"colors": {
 							"red": "#ff0000",
 							"green": "#00ff00",
 							"blue": "#0000ff",
@@ -218,7 +218,7 @@
 				</textarea>
 				<h1 class="l3-title">loop</h1>
 				<div class="describe l3-describe">
-					loop为循环器，只进行单纯的循环，无任何迭代与遍历功能。
+					loop为循环器，只进行单纯的循环。
 				</div>
 				<textarea class="code" readonly="readonly" style="height: 280px;">
 					循环十次:
@@ -239,7 +239,8 @@
 					在loop循环中可以访问到三种作用域临时变量:
 						循环步进： ${ls#step}
 						本次循环值：${ls#state}
-						结束循环值：${ls}
+						循环结束值：${ls#over}
+						当前值：${ls}
 				</textarea>
 				<h1 class="l3-title">while</h1>
 				<div class="describe l3-describe">
@@ -323,7 +324,7 @@
 					将一个变量赋null:
 					${eval #userList[0] = null}
 					
-					定义一个变量:
+					定义一个变量,必须定义在#下:
 					${eval #myvar = "hello world!"}
 				</textarea>
 				<h1 class="l3-title">set</h1>
@@ -360,7 +361,6 @@
 					${include userlist:#userList}
 				</textarea>
 			</div>
-		</div>
 		<h1 class="l1-title" id="first_title">引擎与高级功能</h1>
 		<div class="l1-content content">
 			<h1 class="l2-title">理念</h1>
@@ -368,7 +368,7 @@
 				<div class="describe">
 					<ul>
 						<li>模板基本执行机制为回调式，这样做的好处是可兼容各种加载机制，例如：异步载入。</li>
-						<li>默认缓存编译后的设置了name的模板，这其实是一个注册机制，亦可卸载注册过的模板。</li>
+						<li>默认缓存设置了name的模板，这其实是一个注册机制，亦可卸载注册过的模板。</li>
 					</ul>
 				</div>
 			</div>
