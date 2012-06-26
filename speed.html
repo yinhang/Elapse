@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<script type="text/javascript" src="javascript/Elapse.js"></script>
+</head>
+<body>
+	<script type="text/javascript">
+		var data={
+			list:[
+				{name:'<button>dsaf</button>',show:true},
+				{name:'benben',show:false},
+				{name:'dier',show:true}
+			],
+			blah:[
+				{num:1},
+				{num:2},
+				{num:3,inner:[
+					{'time':'15:00'},
+					{'time':'16:00'},
+					{'time':'17:00'},
+					{'time':'18:00'}
+				]},
+				{num:4}
+			]
+		};
+
+		var tpl=[
+			'<ul>',
+				'${forarr #list as it}',
+					'<li>${it.name} (index: ${it#index})</li>',
+				'${/forarr}',
+				'${forarr #blah as it}',
+					'<li>',
+						'num: ${it.num} <br />',
+						'${if it.num == 3}',
+							'${forarr it.inner as it2}',
+								'${it2.time} <br />',
+							'${/forarr}',
+						'${/if}',
+					'</li>',
+				'${/forarr}',
+			'</ul>'
+		].join('\n');
+
+		var inc=function(n) {
+			return n+1;
+		};
+
+		var template = null;
+		Elapse.compile({
+			source: tpl,
+			complete: function (_template) {
+				template = _template;
+			}
+		});
+		var obj = {
+				template: tpl,
+				data: data
+		};
+		
+		/*template.render = function () {
+			var vsb = arguments[0].data, tsb = {}, settings = {}, rt = window["#TERUNTIME"], cb = [];
+			cb.push("<ul>\n");
+			tsb["it"] = {};
+			for(var i = tsb["it"].i = 0, l = tsb["it"].l = vsb.list.length; i < l; ++tsb["it"].i) {
+				tsb["it"].v = vsb.list[tsb["it"].i];
+				cb.push("\n<li>");
+				cb.push(rt.outputVal(tsb.it.v.name, settings["filter_data"]));
+				cb.push(" (index: ");
+				cb.push(rt.outputVal(tsb.it.i, settings["filter_data"]));
+				cb.push(")</li>\n");
+			}
+			tsb["it"] = {};
+			for(tsb["it"].i = 0, tsb["it"].l = vsb.blah.length; tsb["it"].i < tsb["it"].l; ++tsb["it"].i) {
+				tsb["it"].v = vsb.blah[tsb["it"].i];
+				cb.push("\n<li>\nnum: ");
+				cb.push(rt.outputVal(tsb.it.v.num, settings["filter_data"]));
+				cb.push(" <br />\n");
+				if(tsb.it.v.num == 3) {
+					tsb["it2"] = {};
+					for(tsb["it2"].i = 0, tsb["it2"].l = tsb.it.v.inner.length; tsb["it2"].i < tsb["it2"].l; ++tsb["it2"].i) {
+						tsb["it2"].v = tsb.it.v.inner[tsb["it2"].i];
+						cb.push(rt.outputVal(tsb.it2.v.time, settings["filter_data"]));
+						cb.push(" <br />\n");
+					}
+				}
+				cb.push("\n</li>\n");
+			}
+			cb.push("\n</ul> ");
+			return cb.join("");
+		};*/
+		
+		var starttimestamp=new Date().getTime();
+		for(var i=0;i<1000;i++) {
+			template.render(obj);
+		}
+
+		var endtimestamp=new Date().getTime();
+		var exhausttime=endtimestamp-starttimestamp;
+
+		document.write(template.render(obj));
+		document.write('run time: '+exhausttime);
+	</script>
+</body>
+</html>

@@ -4,9 +4,23 @@
 		R_R : /\r/g,
 		R_T : /\t/g,
 		R_F : /\f/g,
+		R_AB: /[&<>"]/igm,
 		R_QUOTE : /\"/g,
 		R_SLASH : /\\/g,
 		R_TRIM : /(^\s*)|(\s*$)/g
+	};
+	
+	var escapehash = {
+		"<": "&lt;",
+        ">": "&gt;",
+        "&": "&amp;",
+        "\"": "&quot;",
+        "'": "&#x27;",
+        "/": "&#x2f;"
+        };
+	
+	function replaceAB(m) {
+		return escapehash[m];
 	};
 
 	function trim(str) {
@@ -19,18 +33,13 @@
 	window[RUNTIME] = {
 		outputVal : function(value, filter_data) {
 			if(filter_data != false)
-				return window[RUNTIME].outputUnicode(value);
+				return wrou(value);
 			else {
 				return value;
 			}
 		},
 		outputUnicode : function(str) {
-			str += "";
-			var newStr = [];
-			for(var i = 0, l = str.length; i < l; ++i) {
-				newStr.push("&#" + str.charCodeAt(i));
-			}
-			return newStr.join("");
+			return typeof(str) == "string" ? str.replace(REG_EXP.R_AB, replaceAB) : str;
 		},
 		register : function(uri, template) {
 			TEMPLATES[uri] = template;
@@ -43,6 +52,9 @@
 			});
 		}
 	};
+	
+	//runtime function cache
+	var wrou = window[RUNTIME].outputUnicode;
 
 	//状态码
 	var STATE = {
@@ -505,6 +517,8 @@
                         //如果是输出代码，补全输出语句。
                         case STATE.OUTPUT_VAL:
                             javascriptSource.push("cb.push(rt.outputVal(" + Translater.parseVal(outputValBuffer.join("")) + ",settings[\"filter_data\"]));");
+                            
+                            //javascriptSource.push("if(settings[\"filter_data\"]!=false){cb.push((" + Translater.parseVal(outputValBuffer.join("")) + " + \"\").replace(REG_EXP.R_AB, replaceAB));}else{cb.push(" + Translater.parseVal(outputValBuffer.join("")) + ");}");
                             outputValBuffer = [];
                             break;
                         //静态内容直接添加到缓存，但是代码回归完成状态除外。
@@ -850,10 +864,10 @@
 	 * @option complete
 	 */
 	function Template(options) {
+		var self = this;
 		this.compiled = Translater.start(options.source);
         //console.log(this.compiled.builderSource)
-		this.builder = new Function(this.compiled.builderSource);
-		var self = this;
+        eval("this.builder = function () {" + this.compiled.builderSource + "};");
 		if(this.compiled.userSettings) {
 			var name = this.compiled.userSettings[KEYWORD.NAME];
 			var includes = this.compiled.userSettings[KEYWORD.INCLUDE];
