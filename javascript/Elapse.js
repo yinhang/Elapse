@@ -56,7 +56,6 @@
 	//runtime function cache
 	var wrou = window[RUNTIME].outputUnicode;
 
-	//×´Ì¬Âë
 	var STATE = {
 		STATIC_CONTENT : 0,
 		JAVASCRIPT : 1,
@@ -79,7 +78,6 @@
 		WHILE_CON : 18
 	};
 
-	//¹Ø¼ü×ÖÓ³Éä
 	var KEYWORD = {
 		IF : "if",
 		FOREACH : "foreach",
@@ -100,18 +98,15 @@
 		DEFAULT : "default"
 	};
 
-	//¹Ø¼ü×ÖÊµ¼ÊÖµ
 	var KEYWORD_STR = [];
 	for(var keyWordName in KEYWORD) {
 		KEYWORD_STR.push(KEYWORD[keyWordName]);
 	}
 
-	//×ÖÃæ³£Á¿ÁĞ±í
 	var WORD_CONSTANT = ["true", "false", "undefined", "null", "NaN", "new", "delete"];
 
 	var SINGLE_KEYWORD = [KEYWORD.BREAK, KEYWORD.CONTINUE, KEYWORD.CASE, KEYWORD.ELSE, KEYWORD.ELSE_IF, KEYWORD.EVAL, KEYWORD.SET, KEYWORD.NAME, KEYWORD.INCLUDE, KEYWORD.DEFAULT];
 
-	//ÁÙÊ±±äÁ¿Ó³Éä
 	var TEMP_VAR_MAP = {
         length: "l",
         index: "i",
@@ -121,7 +116,6 @@
         step: "st"
 	};
 
-	//ÁÙÊ±±äÁ¿·ÃÎÊÃû³Æ
 	var TEMP_SHORTVARNAME = [];
 	for(var name in TEMP_VAR_MAP) {
 		TEMP_SHORTVARNAME.push(TEMP_VAR_MAP[name]);
@@ -169,7 +163,6 @@
 		},
 		parseLoopSetting : function(source) {
 			var state = FIND_LOOP_SETTINGS.FINDING;
-			//Ä¿±êµü´ú¼¯ºÏÊÇ·ñÕÒµ½£¿
 			var settings = [];
 			var valBuffer = [];
 			source = trim(source);
@@ -247,7 +240,6 @@
 		},
 		parseIterValName : function(source) {
 			var state = PARSE_ITERVALNAME.FINDING;
-			//Ä¿±êµü´ú¼¯ºÏÊÇ·ñÕÒµ½£¿
 			var parsedSource = [];
 			var tmpVars = [];
 			var tmpVarBuffer = [];
@@ -333,7 +325,7 @@
 			return [parsedSource.join(""), tmpVars[0]];
 		},
 		/**
-		 * ´¦Àí±äÁ¿
+		 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		 */
 		parseVal : function(source) {
 			source += " ";
@@ -379,12 +371,10 @@
 					case PARSEVAL_STATE.FOUND_LEFT_SQUARE:
 						varBuffer.push(curChar);
 						if(curChar == "]") {
-							//´¦Àí·½À¨ºÅÄÚµÄÄÚÈİ
                             var varBufferStr = varBuffer.join("");
 							var leftSquareIndex = varBufferStr.indexOf("[");
 							var rightSquareIndex = varBufferStr.lastIndexOf("]");
 							if(leftSquareIndex != -1 && rightSquareIndex != -1) {
-								//´¦ÀíÖµ±í´ïÊ½
 								var content = Translater.parseVal(trim(varBufferStr.substring(leftSquareIndex + 1, rightSquareIndex)));
 								varBufferStr = varBufferStr.substring(0, leftSquareIndex + 1) + content + varBufferStr.substr(rightSquareIndex);
 								state = PARSEVAL_STATE.FOUND_VAL;
@@ -406,16 +396,11 @@
 							state = PARSEVAL_STATE.FINDING;
                             var varBufferStr = varBuffer.join("");
 							if(inArray(varBufferStr, WORD_CONSTANT) == false) {
-								//ÈıÖÖ±äÁ¿:
-								//#:×¢ÈëÊı¾İ,@:È«¾Ö±äÁ¿,¾Ö²¿ÁÙÊ±±äÁ¿
 								switch(varBufferStr.charAt(0)) {
-									//×¢ÈëÊı¾İ
 									case "#":
 										varBufferStr = varBufferStr.substr(1);
-										//Ö±½Ó·ÃÎÊ×Ó¶ÔÏó?
 										if(varBufferStr.charAt(0) == ".")
 											varBufferStr = varBufferStr.substr(1);
-										//Í¨¹ıÅĞ¶Ï±äÁ¿³¤¶ÈÀ´È·¶¨ÊÇÖ±½Ó·ÃÎÊ¸¸¶ÔÏó»¹ÊÇ·ÃÎÊ×Ó¶ÔÏó
 										if(varBufferStr && varBufferStr.length > 0) {
 											if(varBufferStr.charAt(0) == "[") {
 												varBufferStr = "vsb" + varBufferStr;
@@ -427,13 +412,10 @@
 										}
                                         varBuffer = [varBufferStr];
 										break;
-									//windowÈ«¾Ö
 									case "@":
 										varBufferStr = varBufferStr.substr(1);
-										//Ö±½Ó·ÃÎÊ×Ó¶ÔÏó?
 										if(varBufferStr.charAt(0) == ".")
 											varBufferStr = varBufferStr.substr(1);
-										//Í¨¹ıÅĞ¶Ï±äÁ¿³¤¶ÈÀ´È·¶¨ÊÇÖ±½Ó·ÃÎÊ¸¸¶ÔÏó»¹ÊÇ·ÃÎÊ×Ó¶ÔÏó
 										if(varBufferStr && varBufferStr.length > 0) {
 											if(varBufferStr.charAt(0) == "[") {
 												varBufferStr = "window" + varBufferStr;
@@ -445,7 +427,6 @@
 										}
                                         varBuffer = [varBufferStr];
 										break;
-									//ÁÙÊ±±äÁ¿
 									default:
                                         var tempNameSplited = varBuffer.join("").split(".");
                                         var subVars = tempNameSplited.shift().split("#");
@@ -493,8 +474,8 @@
 			return parsedSource.substr(0, parsedSource.length - 1);
 		},
 		/**
-		 * ¿ªÊ¼·­Òë
-		 * @option source Ô´´úÂë
+		 * ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½
+		 * @option source Ô´ï¿½ï¿½ï¿½ï¿½
 		 */
 		start : function(source) {
 			source += " ";
@@ -506,28 +487,22 @@
 			var codeFound = 0;
 			var userSettings = {};
 			var state = STATE.STATIC_CONTENT;
-			//´úÂëÏÖÔÚÊÇ·ñÎª»Ø¹éÍê³É·­Òë½×¶Î?
 			var returnComplete = false;
             for(var i = 0, l = source.length; i < l; ++i) {
                 var curChar = source.charAt(i);
-                //ÅĞ¶ÏÊÇ·ñÀë¿ª´úÂë¶Î
                 if(curChar == "}") {
-                    //½øĞĞÒ»Ğ©²¹È«²Ù×÷£¬½«À´ÓÅ»¯·­ÒëÆ÷Âß¼­¿ÉÄÜ»á±ÜÃâÒÔÏÂµÄswitchµÄ³öÏÖ¡£
                     switch(state) {
-                        //Èç¹ûÊÇÊä³ö´úÂë£¬²¹È«Êä³öÓï¾ä¡£
                         case STATE.OUTPUT_VAL:
                             javascriptSource.push("cb.push(rt.outputVal(" + Translater.parseVal(outputValBuffer.join("")) + ",settings[\"filter_data\"]));");
                             
                             //javascriptSource.push("if(settings[\"filter_data\"]!=false){cb.push((" + Translater.parseVal(outputValBuffer.join("")) + " + \"\").replace(REG_EXP.R_AB, replaceAB));}else{cb.push(" + Translater.parseVal(outputValBuffer.join("")) + ");}");
                             outputValBuffer = [];
                             break;
-                        //¾²Ì¬ÄÚÈİÖ±½ÓÌí¼Óµ½»º´æ£¬µ«ÊÇ´úÂë»Ø¹éÍê³É×´Ì¬³ıÍâ¡£
                         case STATE.STATIC_CONTENT:
                             if(returnComplete == false)
                                 staticContentBuffer.push(curChar);
                             break;
                     }
-                    //Èç¹û¹Ø¼ü×ÖÓï¾ä¶Î»¹Î´´¦ÀíÍê±Ï£¬»Ø¹éµ½ÉÏÒ»´ÎÑ­»·£¬Íê³É¹Ø¼ü×Ö´úÂë¡£
                     if(keywordBuffer.length > 0) {
                         state = STATE.KEYWORD;
                         returnComplete = true;
@@ -540,16 +515,12 @@
                 }
                 switch(state) {
                     case STATE.STATIC_CONTENT:
-                        //ÅĞ¶ÏÊÇ·ñ½øÈë´úÂë¶Î
                         if(curChar == "$" && source.charAt(i + 1) == "{") {
                             if(trim(staticContentBuffer.join("")).length > 0) {
-                                //±£»¤´úÂë²»±»¿Õ°×ÄÚÈİÆÆ»µ
                                 javascriptSource.push(Translater.parseStaticContent(staticContentBuffer.join("")));
                             }
-                            //Çå¿Õ¾²Ì¬»º´æ£¬±£Ö¤²»»á³öÎÊÌâ¡£
                             staticContentBuffer = [];
                             state = STATE.JAVASCRIPT;
-                            //¼ÇÂ¼·­ÒëÆ÷¿ÉÒÔÊ¶±ğµÄ´úÂëµÄ·¢ÏÖÊıÁ¿£¬ÓÃÓÚÅĞ¶ÏÃ¿´ÎĞÂ·¢ÏÖµÄÎ»ÖÃÓĞÒ»Ğ©Óï·¨ÒªÒÀ¾İÎ»ÖÃ£¬ÀıÈçÖ±½ÓÊä³ö±äÁ¿{T.abc}£¬·¢ÏÖ$²¢ÇÒcodeFound==0¼´¿ÉÈ·ÈÏÕâÊÇÊä³ö±äÁ¿Óï¾ä¡£
                             codeFound = 0;
                             ++ i;
                             continue;
@@ -558,7 +529,6 @@
                         break;
                     case STATE.JAVASCRIPT:
                         switch(curChar) {
-                            //Êä³ö×ªÒå¾²Ì¬ÄÚÈİ
                             case "\\":
                                 if(codeFound == 0) {
                                     staticContentBuffer.push(source.charAt(i + 1));
@@ -839,7 +809,6 @@
                                 break;
                             default:
                                 ++codeFound;
-                                //»Ø¹éÍê³É·­Òë½×¶Î²»Òª½«µ±Ç°charÌí¼Óµ½»º´æ£¬»áµ¼ÖÂcharÖØ¸´¡£
                                 outputValBuffer.push(keywordBuffer.join("") + ( returnComplete ? "" : curChar));
                                 state = STATE.OUTPUT_VAL;
                                 valBuffer = [];
@@ -903,11 +872,11 @@
         options  = options || {};
 		return this.builder(options.data);
 	};
-	//Ä£°åloader
+	
 	var templateLoader = function (name, setter) {
-        setter("\"" + name + "\"ÎŞ·¨¼ÓÔØ£¬Î´ÉèÖÃloader¡£");
+        setter("\"" + name + "\"ï¿½Ş·ï¿½ï¿½ï¿½ï¿½Ø£ï¿½Î´ï¿½ï¿½ï¿½ï¿½loaderï¿½ï¿½");
     };
-	//loadÄ£°å·½·¨
+    
 	function loadTemplate(name, complete) {
 		templateLoader(name, function(source) {
 			Engine.compile({

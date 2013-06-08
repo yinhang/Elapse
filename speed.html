@@ -27,21 +27,12 @@
 		};
 
 		var tpl=[
-			'<ul>',
-				'${forarr #list as it}',
-					'<li>${it.name} (index: ${it#index})</li>',
-				'${/forarr}',
-				'${forarr #blah as it}',
-					'<li>',
-						'num: ${it.num} <br />',
-						'${if it.num == 3}',
-							'${forarr it.inner as it2}',
-								'${it2.time} <br />',
-							'${/forarr}',
-						'${/if}',
-					'</li>',
-				'${/forarr}',
-			'</ul>'
+			'${if #currentPage + 5 > #pageCount}',
+			    '${eval #i = #currentPage + 1}',
+			    '${while ++#i < #pageCount}',
+			        '<a href="javascript:void(0);" class="pg" data-page="${#i}">${#i}</a>',
+			    '${/while}',
+			'${/if}'
 		].join('\n');
 
 		var inc=function(n) {
@@ -57,7 +48,10 @@
 		});
 		var obj = {
 				template: tpl,
-				data: data
+				data: {
+					currentPage: 1,
+					pageCount: 4
+				}
 		};
 		
 		/*template.render = function () {
@@ -93,7 +87,7 @@
 		};*/
 		
 		var starttimestamp=new Date().getTime();
-		for(var i=0;i<1000;i++) {
+		for(var i=0;i<100000;i++) {
 			template.render(obj);
 		}
 
