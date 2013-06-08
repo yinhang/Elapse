@@ -324,9 +324,6 @@
 			}
 			return [parsedSource.join(""), tmpVars[0]];
 		},
-		/**
-		 * �������
-		 */
 		parseVal : function(source) {
 			source += " ";
 			var state = PARSEVAL_STATE.FINDING;
@@ -473,10 +470,6 @@
             parsedSource = parsedSource.join("");
 			return parsedSource.substr(0, parsedSource.length - 1);
 		},
-		/**
-		 * ��ʼ����
-		 * @option source Դ����
-		 */
 		start : function(source) {
 			source += " ";
 			var javascriptSource = ["var vsb=arguments[0],tsb={},settings={},rt=window[\"" + RUNTIME + "\"],cb=[];"];
